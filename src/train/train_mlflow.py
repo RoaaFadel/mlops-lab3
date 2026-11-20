@@ -54,6 +54,8 @@ CANDIDATES = {
     "logreg": LogisticRegression(max_iter=1000),
     "random_forest": RandomForestClassifier(n_estimators=100, max_depth=6, random_state=42),
     "gradient_boosting": GradientBoostingClassifier(n_estimators=150, learning_rate=0.05, max_depth=3, random_state=42),
+    "weak": LogisticRegression(C=0.00001, max_iter=1000)
+
 }
 
 
