@@ -1,23 +1,67 @@
-# Model selection
+# Model Selection – Lab 3
 
-Fill this in after you have trained your candidates in MLflow. Short sentences are fine. Use numbers from your runs.
+## 1. Candidate Models
 
-## The question
-What does this model decide, and who is hurt by a wrong answer? (One or two sentences.)
+Three candidate models were trained and evaluated using MLflow:
 
-## Candidates
-| Candidate | Why I tried it | AUC | F1 | F1 per slice (lowest) | p95 latency (ms) | Size (KB) | MLflow run ID |
-|---|---|---|---|---|---|---|---|
-| | | | | | | | |
-| | | | | | | | |
-| | | | | | | | |
+- Logistic Regression
+- Random Forest
+- Gradient Boosting
 
-## The champion
-Which one did I pick, and what decided it? (Name the numbers that mattered and the ones I accepted losing.)
+## 2. Overall Performance Comparison
 
-## My promotion rules
-- Latency budget (p95): ___ ms, because ___
-- Minimum gain to replace the champion (F1 points): ___, because ___
+| Metric | Logistic Regression | Random Forest | Gradient Boosting |
+|---|---:|---:|---:|
+| AUC | 0.798 | 0.778 | 0.759 |
+| F1 Score | 0.495 | 0.400 | 0.396 |
+| P95 Latency (ms) | 6.4 | 18.26 | 4.839 |
+| Model Size (KB) | 4 | 769 | 206 |
 
-## What I would check next
-One thing that could make this choice wrong in production (for example a slice with few customers, or data that changes).
+## 3. Performance by Contract Type
+
+| Contract Type | Logistic Regression | Random Forest | Gradient Boosting |
+|---|---:|---:|---:|
+| Month-to-month | 0.543 | 0.480 | 0.417 |
+| One-year | 0.250 | 0.000 | 0.250 |
+| Two-year | 0.250 | 0.000 | 0.364 |
+
+## 4. Selected Champion
+
+**Logistic Regression** was selected as the champion model.
+
+Reasons for selection:
+
+- Highest overall F1 score (0.495).
+- Highest AUC (0.798).
+- Best performance on the month-to-month contract group (0.543).
+- Smallest model size (4 KB).
+- Acceptable inference latency (6.4 ms).
+
+## 5. Trade-offs and Limitations
+
+Gradient Boosting achieved better performance on the two-year contract group (F1 = 0.364) and lower latency (4.839 ms).
+
+However, its overall F1 score and AUC were lower than Logistic Regression.
+
+Logistic Regression also achieved only 0.250 F1 on both one-year and two-year contract groups. This indicates that performance on longer-term contract groups remains a limitation and should be monitored.
+
+Random Forest was not selected because it had lower overall performance, higher latency, and a larger model size.
+
+## 6. Final Decision
+
+Logistic Regression is the selected champion because it provides the strongest overall predictive performance with the smallest deployment footprint.
+
+The promotion gate will enforce the minimum F1 improvement and latency budget before allowing future models to replace the champion.
+
+## 7. Promotion Gate Configuration
+
+- Latency budget: 15.0 ms.
+- Minimum F1 improvement: 0.010.
+
+The latency budget was selected to allow Logistic Regression
+and Gradient Boosting while blocking the slower Random Forest model.
+
+The minimum F1 gain of 0.010 ensures that a new model must
+provide a meaningful improvement before replacing the champion.
+
+Both thresholds balance predictive performance and deployment efficiency.
